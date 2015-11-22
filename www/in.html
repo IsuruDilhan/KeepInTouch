@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+    <!-- Change this if you want to allow scaling -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, content="width=device-width" />
+    <!--<meta name="viewport" content="width=default-width; user-scalable=no" />-->
+    <meta http-equiv="Content-type" content="text/html;charset=utf-8">
+
+    <title>Next Lec</title>
+    <!--<script type="text/javascript" src="../platforms/android/platform_www/cordova.js"></script>-->
+    <!-- include the next line to use phonegap javascript functions -->
+    <!--<script type="text/javascript" src="../plugins/cordova-sqlite-storage/www/SQLitePlugin.js"></script>-->
+    <script type="text/javascript" src="js/index.js"></script>
+
+    <!-- include the next line to use jquery functions in your application
+    you must download this and include the directory your html file is in
+    -->
+    <link rel="stylesheet" type="text/css" href="css/material.min.css">
+    <link rel="stylesheet" type="text/css" href="css/roboto.min.css">
+    <link rel="stylesheet" type="text/css" href="css/material-fullpalette.min.css">
+    <link rel="stylesheet" type="text/css" href="css/ripples.min.css">
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/material.min.js"></script>
+    <script src="js/ripples.min.js"></script>
+
+    <!-- main scripts used in this example -->
+    <script type="text/javascript" charset="utf-8">
+
+        // global variables
+        var db;
+        var shortName = 'WebSqlDB';
+        var version = '1.0';
+        var displayName = 'WebSqlDB';
+        var maxSize = 65535;
+
+        // this is called when an error happens in a transaction
+        function errorHandler(transaction, error) {
+            //alert('Error: ' + error.message + ' code: ' + error.code);
+
+        }
+
+        // this is called when a successful transaction happens
+        function successCallBack() {
+          //  alert("DEBUGGING: success");
+
+        }
+
+        function nullHandler(){};
+
+        // called when the application loads
+        function onBodyLoad(){
+
+// This alert is used to make sure the application is loaded correctly
+// you can comment this out once you have the application working
+          //  alert("DEBUGGING: we are in the onBodyLoad() function");
+
+            if (!window.openDatabase) {
+                // not all mobile devices support databases  if it does not, the
+               // following alert will display
+                // indicating the device will not be albe to run this application
+                alert('Databases are not supported in this browser.');
+                return;
+            }
+
+// this line tries to open the database base locally on the device
+// if it does not exist, it will create it and return a database
+         //   object stored in variable db
+            db = openDatabase(shortName, version, displayName,maxSize);
+//            db = window.sqlitePlugin.openDatabase({name: "DB"});
+// this line will try to create the table User in the database just
+        //    created/openned
+            db.transaction(function(tx){
+
+                // you can uncomment this next line if you want the User table to be
+            //    empty each time the application runs
+
+
+                // this line actually creates the table User if it does not exist
+               // and sets up the three columns and their types
+                // note the UserId column is an auto incrementing column which is
+               // useful if you want to pull back distinct rows
+                // easily from the table.
+
+
+                tx.executeSql('CREATE TABLE IF NOT EXISTS `1`(iD INTEGER NOT NULL PRIMARY KEY,sub TEXT NOT NULL,loc TEXT NOT NULL,start INTEGER NOT NULL, ends INTEGER NOT NULL)',[],nullHandler);
+                tx.executeSql('INSERT INTO `1`(iD,sub, loc, start, ends) VALUES(1, "SET(L)", "A506", 1030, 1230),(2,"SET(T)", "A506", 1330, 1430)',[],nullHandler);
+
+                tx.executeSql('CREATE TABLE IF NOT EXISTS `2`(iD INTEGER NOT NULL PRIMARY KEY,sub TEXT NOT NULL,loc TEXT NOT NULL,start INTEGER NOT NULL, ends INTEGER NOT NULL)',[],nullHandler);
+                tx.executeSql('INSERT INTO `2`(iD, sub, loc, start, ends) VALUES(1, "DBMSIII(P)", "A507", 830, 1030),(2, "SET(P)", "A702", 1030, 1230)',[],nullHandler);
+
+                tx.executeSql('CREATE TABLE IF NOT EXISTS `3`(iD INTEGER NOT NULL PRIMARY KEY,sub TEXT NOT NULL,loc TEXT NOT NULL,start INTEGER NOT NULL, ends INTEGER NOT NULL)',[],nullHandler);
+                tx.executeSql('INSERT INTO `3`(iD, sub, loc, start, ends) VALUES(1, "SETM(L)", "A522", 830, 1030),(2, "DBMSIII(P)", "A506", 1430, 1530)',[],nullHandler);
+
+                tx.executeSql('CREATE TABLE IF NOT EXISTS `4`(iD INTEGER NOT NULL PRIMARY KEY,sub TEXT NOT NULL,loc TEXT NOT NULL,start INTEGER NOT NULL, ends INTEGER NOT NULL)',[],nullHandler);
+                tx.executeSql('INSERT INTO `4`(iD, sub, loc, start, ends) VALUES(1, "SA(L)", "A503", 1330, 1530),(2, "SA(T)", "A503", 1530, 1630)',[],nullHandler);
+
+                tx.executeSql('CREATE TABLE IF NOT EXISTS `5`(iD INTEGER NOT NULL PRIMARY KEY,sub TEXT NOT NULL,loc TEXT NOT NULL,start INTEGER NOT NULL, ends INTEGER NOT NULL)',[],nullHandler);
+                tx.executeSql('INSERT INTO `5`(iD, sub, loc, start, ends) VALUES(1, "SEP(L)", "A504", 830, 1030),(2, "SET(T)", "A506", 1330, 1430)',[],nullHandler);
+            },errorHandler,successCallBack);
+
+
+        }
+
+        // list the values in the database to the screen using jquery to
+       // update the #lbUsers element
+        function ListDBValues() {
+
+            if (!window.openDatabase) {
+                alert('Databases are not supported in this browser.');
+                return;
+            }
+
+// this line clears out any content in the #lbUsers element on the
+         //   page so that the next few lines will show updated
+// content and not just keep repeating lines
+            $('#lbUsers').html('');
+
+// this next section will select all the content from the User table
+           // and then go through it row by row
+// appending the UserId  FirstName  LastName to the  #lbUsers element
+           // on the page
+            var d = new Date();
+            var date= d.getDay();
+            var hours= d.getHours();
+            var minutes= d.getMinutes();
+            var time = hours+""+minutes;
+            db.transaction(function(transaction) {
+                transaction.executeSql('SELECT * FROM '+'`'+date+'` where start >'+time, [],
+                        function(transaction, result) {
+                            if (result != null && result.rows != null) {
+                                for (var i = 0; i < result.rows.length; i++) {
+                                    var row = result.rows.item(i);
+                                    $('#lbUsers').append('<br>'+'<div class="card" style="width: 20%;text-align: center"> <p>Subject : '+ row.sub + '</p><p>Hall :' +
+                                    row.loc+ '</p><p>Will Start : ' + row.start +'</p></div>');
+                                }
+                            }
+                        },errorHandler);
+
+            },errorHandler,nullHandler);
+
+            return;
+
+        }
+
+        // this is the function that puts values into the database using the
+      //  values from the text boxes on the screen
+        function AddValueToDB() {
+
+            if (!window.openDatabase) {
+                alert('Databases are not supported in this browser.');
+                return;
+            }
+
+// this is the section that actually inserts the values into the User
+          //  table
+//            db.transaction(function(transaction) {
+//                transaction.executeSql('INSERT INTO User(FirstName, LastName) VALUES (?,?)',[$('#txFirstName').val(), $('#txLastName').val()],
+//                nullHandler,errorHandler);
+//            });
+
+
+
+
+            return false;
+
+        }
+
+    </script>
+</head>
+<body onload="onBodyLoad();ListDBValues()">
+<h1>Comming Up Next</h1>
+
+<span style="font-weight:bold;">Next Lecture</span>
+<span id="lbUsers"></span>
+
+<a href="index.html" class="btn btn-info">See TimeTable</a>
+<script type="text/javascript">
+setTimeout(function(){
+
+    if ($('#lbUsers').is(':empty')) {
+
+        $('#lbUsers').before('<p>No Any Lectures today. Do your Homeworks.See you next day :D</p>');
+
+    }},2000);
+
+
+</script>
+</body>
+</html> 
